@@ -30,7 +30,10 @@ const CartProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
-      // TODO LOAD ITEMS FROM ASYNC STORAGE
+      const items = await AsyncStorage.getItem('@marketplace');
+      if (items) {
+        setProducts(JSON.parse(items));
+      }
     }
 
     loadProducts();
@@ -43,6 +46,10 @@ const CartProvider: React.FC = ({ children }) => {
           : product,
       );
       setProducts(incrementedProducts);
+      await AsyncStorage.setItem(
+        '@marketplace',
+        JSON.stringify(incrementedProducts),
+      );
       // TODO INCREMENTS A PRODUCT QUANTITY IN THE CART
     },
     [products],
@@ -55,9 +62,8 @@ const CartProvider: React.FC = ({ children }) => {
         increment(product.id);
       } else {
         setProducts(state => [...state, { ...product, quantity: 1 }]);
+        await AsyncStorage.setItem('@marketplace', JSON.stringify(products));
       }
-
-      // TODO ADD A NEW ITEM TO THE CART
     },
     [products, increment],
   );
@@ -69,6 +75,10 @@ const CartProvider: React.FC = ({ children }) => {
           : product,
       );
       setProducts(updatedProducts);
+      await AsyncStorage.setItem(
+        '@marketplace',
+        JSON.stringify(updatedProducts),
+      );
       // TODO DECREMENTS A PRODUCT QUANTITY IN THE CART
     },
     [products],
